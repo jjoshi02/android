@@ -35,7 +35,7 @@
         android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10" >
+        android:ems="10" android:hint="Birkbeck User ID">
 
         <requestFocus />
     </EditText>
@@ -54,18 +54,18 @@
         android:ems="10"
         android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/submit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Submit" />
-
     <CheckBox
-        android:id="@+id/savecredentials"
+        android:id="@+id/checkboxremember"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:checked="true"
         android:text="Remember" android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/buttonsubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit" />
 
     <TextView
         android:id="@+id/textView1"
