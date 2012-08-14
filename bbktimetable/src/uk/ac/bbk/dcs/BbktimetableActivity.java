@@ -1,6 +1,8 @@
 package uk.ac.bbk.dcs;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,7 +35,6 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 
 	}
 
-	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 
@@ -41,7 +42,7 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 
 		String surl = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stu";
 		String username = "jjoshi02";
-		String password = "C0n5truct2";
+		String password = "";
 		HttpURLConnection c = null;
 
 		try {
@@ -57,7 +58,7 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		c.setRequestProperty(
 				"Authorization",
 				"basic "
-						+ Base64.encode("jjoshi02:C0n5truct2".getBytes(),
+						+ Base64.encode("jjoshi02:".getBytes(),
 								Base64.NO_WRAP));
 		try {
 			c.connect();
@@ -67,6 +68,26 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		} finally {
 			c.disconnect();
 		}
+		
+		InputStream is = null;
+		InputStreamReader isr = new InputStreamReader(is);
+
+		int numCharsRead;
+		char[] charArray = new char[1024];
+		StringBuffer sb = new StringBuffer();
+		try {
+			while ((numCharsRead = isr.read(charArray)) > 0) {
+				sb.append(charArray, 0, numCharsRead);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String result = sb.toString();
+
+		System.out.println("*** BEGIN ***");
+		System.out.println(result);
+		System.out.println("*** END ***");
 
 	}
 
