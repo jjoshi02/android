@@ -1,5 +1,7 @@
 package uk.ac.bbk.dcs;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,9 +20,9 @@ import android.widget.EditText;
 public class BbktimetableActivity extends Activity implements OnClickListener {
 	/** Called when the activity is first created. */
 
-	EditText uname;
-	EditText pword;
-	Button submit;
+	private EditText uname;
+	private EditText pword;
+	private Button submit;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,21 +34,23 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		submit = (Button) findViewById(R.id.buttonsubmit);
 
 		submit.setOnClickListener(this);
-
 	}
 
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 
-		System.out.println(uname.getText().toString());
-
-		String surl = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stu";
-		String username = "jjoshi02";
-		String password = "";
+		String url = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stu";
+		String username = "jjoshi02"; // @@ uname.getText().toString()
+		String password = ""; // @@ pword.getText().toString();
+		String result = null;
 		HttpURLConnection c = null;
+		InputStream in = null;
+
+		System.out.println("User ID :" + username);
+		System.out.println("Password is :" + password);
 
 		try {
-			c = (HttpURLConnection) new URL(surl).openConnection();
+			c = (HttpURLConnection) new URL(url).openConnection();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,7 +62,7 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		c.setRequestProperty(
 				"Authorization",
 				"basic "
-						+ Base64.encode("jjoshi02:".getBytes(),
+						+ Base64.encode((username + ":" + password).getBytes(),
 								Base64.NO_WRAP));
 		try {
 			c.connect();
@@ -68,27 +72,32 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		} finally {
 			c.disconnect();
 		}
-		
-		InputStream is = null;
-		InputStreamReader isr = new InputStreamReader(is);
 
-		int numCharsRead;
-		char[] charArray = new char[1024];
-		StringBuffer sb = new StringBuffer();
 		try {
-			while ((numCharsRead = isr.read(charArray)) > 0) {
-				sb.append(charArray, 0, numCharsRead);
-			}
+			in = new BufferedInputStream(c.getInputStream());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			result = readStream(in);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String result = sb.toString();
 
 		System.out.println("*** BEGIN ***");
 		System.out.println(result);
 		System.out.println("*** END ***");
-
 	}
 
+	public static String readStream(InputStream in) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		BufferedReader br = new BufferedReader(new InputStreamReader(in), 1000);
+		for (String line = br.readLine(); line != null; line = br.readLine()) {
+			sb.append(line);
+		}
+		in.close();
+		return sb.toString();
+	}
 }
