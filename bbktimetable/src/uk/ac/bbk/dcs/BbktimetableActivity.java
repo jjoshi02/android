@@ -1,17 +1,39 @@
 package uk.ac.bbk.dcs;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.scheme.SocketFactory;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,17 +45,54 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 	private EditText uname;
 	private EditText pword;
 	private Button submit;
+	private HttpClient c;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		try {
+			c = getNewHttpClient();
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to initialise HttpClient", e);
+		}
+
 		uname = (EditText) findViewById(R.id.username);
 		pword = (EditText) findViewById(R.id.password);
 		submit = (Button) findViewById(R.id.buttonsubmit);
 
+		// StrictMode.ThreadPolicy policy = new
+		// StrictMode.ThreadPolicy.Builder()
+		// .permitAll().build();
+		// StrictMode.setThreadPolicy(policy);
+
 		submit.setOnClickListener(this);
+	}
+
+	public HttpClient getNewHttpClient() throws KeyStoreException,
+			KeyManagementException, NoSuchAlgorithmException,
+			UnrecoverableKeyException, CertificateException, IOException {
+
+		KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		trustStore.load(null, null);
+
+		SSLSocketFactory sf = new InsecureSslSocketFactory(trustStore);
+		sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+		HttpParams params = new BasicHttpParams();
+		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+		HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+
+		SchemeRegistry registry = new SchemeRegistry();
+		registry.register(new Scheme("http", PlainSocketFactory
+				.getSocketFactory(), 80));
+		registry.register(new Scheme("https", (SocketFactory) sf, 443));
+
+		ClientConnectionManager ccm = new ThreadSafeClientConnManager(params,
+				registry);
+
+		return new DefaultHttpClient(ccm, params);
 	}
 
 	public void onClick(View v) {
@@ -42,62 +101,44 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		String url = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stu";
 		String username = "jjoshi02"; // @@ uname.getText().toString()
 		String password = ""; // @@ pword.getText().toString();
-		String result = null;
-		HttpURLConnection c = null;
-		InputStream in = null;
+		String page = null;
 
 		System.out.println("User ID :" + username);
 		System.out.println("Password is :" + password);
 
-		try {
-			c = (HttpURLConnection) new URL(url).openConnection();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		UsernamePasswordCredentials creds = new UsernamePasswordCredentials(
+				username, password);
 
-		c.setRequestProperty(
-				"Authorization",
-				"basic "
-						+ Base64.encode((username + ":" + password).getBytes(),
-								Base64.NO_WRAP));
+		HttpUriRequest request = new HttpGet(url);
+
 		try {
-			c.connect();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			request.addHeader(new BasicScheme().authenticate(creds, request));
+		} catch (AuthenticationException e) {
+			// TODO: Handle AuthenticationException
 			e.printStackTrace();
-		} finally {
-			c.disconnect();
+			throw new RuntimeException(e);
 		}
 
 		try {
-			in = new BufferedInputStream(c.getInputStream());
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			result = readStream(in);
+			HttpResponse response = c.execute(request);
+			page = EntityUtils.toString(response.getEntity());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// TODO: Handle IOException
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
-		System.out.println("*** BEGIN ***");
-		System.out.println(result);
-		System.out.println("*** END ***");
+		System.out.println(page);
+
+		Pattern pattern = Pattern.compile("pstuc=(\\d+)\\'");
+		Matcher matcher = pattern.matcher(page);
+		if (matcher.find()) {
+			String studentId = matcher.group(1);
+			System.out.println("Student ID is :" + studentId);
+		} else {
+			// ARRGH no id
+			System.out.println("No valid Student ID found");
+		}
 	}
 
-	public static String readStream(InputStream in) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		BufferedReader br = new BufferedReader(new InputStreamReader(in), 1000);
-		for (String line = br.readLine(); line != null; line = br.readLine()) {
-			sb.append(line);
-		}
-		in.close();
-		return sb.toString();
-	}
 }
