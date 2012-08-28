@@ -3,7 +3,7 @@
     android:id="@+id/myScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#990033"
+    android:background="#882233"
     android:orientation="vertical">
 
     <TextView

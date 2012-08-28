@@ -46,6 +46,7 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 	private EditText pword;
 	private Button submit;
 	private HttpClient c;
+	private boolean loginFlag = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -95,28 +96,34 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		return new DefaultHttpClient(ccm, params);
 	}
 
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-
-		String url = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stu";
+	public static UsernamePasswordCredentials getCredential() {
 		String username = "jjoshi02"; // @@ uname.getText().toString()
 		String password = ""; // @@ pword.getText().toString();
-		String page = null;
+		UsernamePasswordCredentials creds = null;
 
 		System.out.println("User ID :" + username);
 		System.out.println("Password is :" + password);
 
-		UsernamePasswordCredentials creds = new UsernamePasswordCredentials(
-				username, password);
+		return creds = new UsernamePasswordCredentials(username, password);
+	}
 
-		HttpUriRequest request = new HttpGet(url);
+	public String getPage(String url) {
+		String page = null;
+		HttpUriRequest request = null;
 
-		try {
-			request.addHeader(new BasicScheme().authenticate(creds, request));
-		} catch (AuthenticationException e) {
-			// TODO: Handle AuthenticationException
-			e.printStackTrace();
-			throw new RuntimeException(e);
+		if (getCredential() != null) {
+			request = new HttpGet(url);
+
+			try {
+				request.addHeader(new BasicScheme().authenticate(
+						getCredential(), request));
+			} catch (AuthenticationException e) {
+				// TODO: Handle AuthenticationException
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		} else {
+			System.out.println("Credentials blank");
 		}
 
 		try {
@@ -127,18 +134,39 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-
 		System.out.println(page);
+		return page;
+	}
+
+	public String getStudentId(String page) {
+		String studentId = null;
 
 		Pattern pattern = Pattern.compile("pstuc=(\\d+)\\'");
 		Matcher matcher = pattern.matcher(page);
 		if (matcher.find()) {
-			String studentId = matcher.group(1);
+			studentId = matcher.group(1);
 			System.out.println("Student ID is :" + studentId);
 		} else {
-			// ARRGH no id
 			System.out.println("No valid Student ID found");
 		}
+		return studentId;
+
 	}
 
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+
+		String url = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stu";
+		String page = getPage(url);
+		if (page != null) {
+			String id = getStudentId(page);
+			if (id != null) {
+				String url2 = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stutt?pstuc="
+						+ id;
+				System.out.println("**********************" + url2
+						+ "**********************");
+				page = getPage(url2);
+			}
+		}
+	}
 }
