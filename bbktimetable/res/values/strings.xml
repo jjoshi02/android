@@ -3,5 +3,7 @@
 
     <string name="hello">Hello World, BbktimetableActivity!</string>
     <string name="app_name">Bbktimetable</string>
+    <string name="Timetable">Timetable for you</string>
+    <string name="mytimetable">Student Timetable</string>
 
 </resources>

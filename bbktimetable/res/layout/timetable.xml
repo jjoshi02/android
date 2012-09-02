@@ -1,0 +1,8 @@
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#882233"
+        android:text="@string/mytimetable" />
+
