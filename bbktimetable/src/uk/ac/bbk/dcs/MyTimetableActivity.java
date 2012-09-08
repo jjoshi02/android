@@ -20,10 +20,12 @@ public class MyTimetableActivity extends Activity implements OnClickListener {
 
 		buttonquit = (Button) findViewById(R.id.buttonquit);
 		WebView webview = (WebView) findViewById(R.id.webview);
+		webview.setVerticalScrollBarEnabled(true);
+		webview.setHorizontalScrollBarEnabled(true);
 		webview.setBackgroundColor(Color.parseColor("#882233"));
 		String summary = "<html><body>" + BbktimetableActivity.timetableString
 				+ "</body></html>";
-		System.out.println(summary);
+		// System.out.println(summary);
 
 		webview.loadData(URLEncoder.encode(summary).replaceAll("\\+", " "),
 				"text/html", "utf-8");

@@ -37,20 +37,24 @@ import org.jsoup.nodes.Element;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
 public class BbktimetableActivity extends Activity implements OnClickListener {
-	public static final String url = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stu";
+	private static final String url = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stu";
+	public static String timetableString = null;
 	private static EditText uname;
 	private static EditText pword;
 	private Button submit;
 	private HttpClient c;
-	public static String timetableString = null;
+	private String PREFS = "MyPrefs";
+	private SharedPreferences myPrefs;
 
 	@Override
 	public void onResume() {
@@ -85,6 +89,27 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		myPrefs = getSharedPreferences(PREFS, 0);
+
+		boolean rememberMe = myPrefs.getBoolean("rememberMe", false);
+
+		if (rememberMe == true) {
+			// get previously stored login details
+			String login = myPrefs.getString("login", null);
+			String upass = myPrefs.getString("password", null);
+
+			if (login != null && upass != null) {
+				// fill input boxes with stored login and pass
+				EditText loginEbx = (EditText) findViewById(R.id.username);
+				EditText passEbx = (EditText) findViewById(R.id.password);
+				loginEbx.setText(login);
+				passEbx.setText(upass);
+
+				// set the check box to 'checked'
+				CheckBox rememberMeCbx = (CheckBox) findViewById(R.id.checkboxremember);
+				rememberMeCbx.setChecked(true);
+			}
+		}
 
 		uname = (EditText) findViewById(R.id.username);
 		pword = (EditText) findViewById(R.id.password);
@@ -113,16 +138,19 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 				page = getPage(url2);
 				if (page != null) {
 					if (getMyTimetable(page)) {
-						if (v == submit) {
-							Intent timetableIntent = new Intent(v.getContext(),
-									MyTimetableActivity.class);
-							startActivity(timetableIntent);
-							callNull();
+						if (timetableString != null) {
+							if (v == submit) {
+								Intent timetableIntent = new Intent(
+										v.getContext(),
+										MyTimetableActivity.class);
+								startActivity(timetableIntent);
+								callNull();
+							}
+						} else {
+							Toast.makeText(this, "Unable to get timetable",
+									Toast.LENGTH_LONG).show();
+							System.out.println("Unable to get timetable");
 						}
-					} else {
-						Toast.makeText(this, "Unable to get timetable",
-								Toast.LENGTH_LONG).show();
-						System.out.println("Unable to get timetable");
 					}
 				}
 			} else {
@@ -156,8 +184,15 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 				third = secondNext.toString();
 				tableText = first + second + third;
 				// System.out.println(tableText);
-				timetableString = tableText;
-				flag = true;
+				if (tableText != null && first != null && second != null
+						&& third != null) {
+					timetableString = tableText;
+					flag = true;
+				} else {
+					Toast.makeText(this, "Unable to scrap Timetable page",
+							Toast.LENGTH_LONG).show();
+					System.out.println("Unable to scrap timetable page");
+				}
 			} else {
 				Toast.makeText(this, "Unable to find Timetable",
 						Toast.LENGTH_LONG).show();
@@ -247,11 +282,11 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 	}
 
 	public static UsernamePasswordCredentials getCredential() {
-		// String username = "jjoshi02";
-		// String password = "";
+		String username = "jjoshi02";
+		String password = "Uk5afe25";
 
-		String username = uname.getText().toString();
-		String password = pword.getText().toString();
+		//String username = uname.getText().toString();
+		//String password = pword.getText().toString();
 
 		UsernamePasswordCredentials creds = null;
 
