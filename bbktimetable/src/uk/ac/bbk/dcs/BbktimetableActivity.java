@@ -93,8 +93,14 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 			String upass = myPrefs.getString("password", null);
 
 			if (login != null && upass != null) {
+				// String dlogin = new String(Base64.decode(login,
+				// Base64.DEFAULT));
+				// String dupass = new String(Base64.decode(upass,
+				// Base64.DEFAULT));
 				uname.setText(login);
 				pword.setText(upass);
+				// System.out.println("Decrypted login :" + dlogin);
+				// System.out.println("Decrypted pass :" + dupass);
 				rememberCbx.setChecked(true);
 			}
 		}
@@ -111,13 +117,24 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 
 	private void saveLoginDetails() {
 		String login = uname.getText().toString();
-		String upass = pword.getText().toString();
+		String pass = pword.getText().toString();
 
-		Editor e = myPrefs.edit();
-		e.putBoolean("rememberMe", true);
-		e.putString("login", login);
-		e.putString("password", upass);
-		e.commit();
+		if (login != null && pass != null) {
+			Editor e = myPrefs.edit();
+			e.putBoolean("rememberMe", true);
+			// login = Base64.encodeToString(login.getBytes(), Base64.DEFAULT);
+			// pass = Base64.encodeToString(pass.getBytes(), Base64.DEFAULT);
+			e.putString("login", login);
+			e.putString("password", pass);
+			// System.out.println("Encrypted login is: " + login);
+			// System.out.println("Encrypted pass is: " + pass);
+			e.commit();
+		} else {
+			Toast.makeText(BbktimetableActivity.this,
+					"Username / Password blank, try again", Toast.LENGTH_LONG)
+					.show();
+			System.out.println("Username / Password blank, try again");
+		}
 	}
 
 	private void removeLoginDetails() {
