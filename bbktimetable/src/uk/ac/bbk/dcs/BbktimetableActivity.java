@@ -57,6 +57,7 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 	private HttpClient c;
 	private String PREFS = "MyPrefs";
 	private SharedPreferences myPrefs;
+	private EncDec ed;
 
 	@Override
 	public void onResume() {
@@ -85,6 +86,15 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		submit = (Button) findViewById(R.id.buttonsubmit);
 		rememberCbx = (CheckBox) findViewById(R.id.checkboxremember);
 
+		// load key from keystore if preferences already remembered else
+		/*
+		 * try { // Generate a temporary key SecretKey key =
+		 * KeyGenerator.getInstance("DES").generateKey();
+		 * 
+		 * // Create encrypter/decrypter class ed = new EncDec(key); } catch
+		 * (Exception e) { }
+		 */
+
 		myPrefs = getSharedPreferences(PREFS, 0);
 		boolean rememberMe = myPrefs.getBoolean("rememberMe", false);
 
@@ -93,14 +103,15 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 			String upass = myPrefs.getString("password", null);
 
 			if (login != null && upass != null) {
-				// String dlogin = new String(Base64.decode(login,
-				// Base64.DEFAULT));
-				// String dupass = new String(Base64.decode(upass,
-				// Base64.DEFAULT));
+				// String dlogin = ed.decrypt(login);
+				// String dupass = ed.decrypt(upass);
+
 				uname.setText(login);
 				pword.setText(upass);
-				// System.out.println("Decrypted login :" + dlogin);
-				// System.out.println("Decrypted pass :" + dupass);
+				/*
+				 * System.out.println("Decrypted login :" + dlogin);
+				 * System.out.println("Decrypted pass :" + dupass);
+				 */
 				rememberCbx.setChecked(true);
 			}
 		}
@@ -122,12 +133,14 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		if (login != null && pass != null) {
 			Editor e = myPrefs.edit();
 			e.putBoolean("rememberMe", true);
-			// login = Base64.encodeToString(login.getBytes(), Base64.DEFAULT);
-			// pass = Base64.encodeToString(pass.getBytes(), Base64.DEFAULT);
+			// String elogin = ed.encrypt(login);
+			// String epass = ed.encrypt(pass);
+			// // pass = Base64.encodeToString(pass.getBytes(), Base64.DEFAULT);
 			e.putString("login", login);
 			e.putString("password", pass);
-			// System.out.println("Encrypted login is: " + login);
-			// System.out.println("Encrypted pass is: " + pass);
+			// System.out.println("Encrypted login is: " + elogin);
+			// System.out.println("Encrypted pass is: " + epass);
+			//
 			e.commit();
 		} else {
 			Toast.makeText(BbktimetableActivity.this,
