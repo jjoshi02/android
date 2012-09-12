@@ -1,6 +1,7 @@
 package uk.ac.bbk.dcs;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -40,6 +41,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -57,7 +59,6 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 	private HttpClient c;
 	private String PREFS = "MyPrefs";
 	private SharedPreferences myPrefs;
-	private EncDec ed;
 
 	@Override
 	public void onResume() {
@@ -87,13 +88,14 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		rememberCbx = (CheckBox) findViewById(R.id.checkboxremember);
 
 		// load key from keystore if preferences already remembered else
-		/*
-		 * try { // Generate a temporary key SecretKey key =
-		 * KeyGenerator.getInstance("DES").generateKey();
-		 * 
-		 * // Create encrypter/decrypter class ed = new EncDec(key); } catch
-		 * (Exception e) { }
-		 */
+		// try { // Generate a key
+		// SecretKey key = KeyGenerator.getInstance("AES").generateKey();
+		//
+		// // Create encrypter/decrypter class with this key
+		// ed = new EncDec(key);
+		// } catch (Exception e) {
+		// // System.out.println("");
+		// }
 
 		myPrefs = getSharedPreferences(PREFS, 0);
 		boolean rememberMe = myPrefs.getBoolean("rememberMe", false);
@@ -105,13 +107,23 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 			if (login != null && upass != null) {
 				// String dlogin = ed.decrypt(login);
 				// String dupass = ed.decrypt(upass);
+				byte[] dlogin = Base64.decode(login, 0);
+				String strlogin = null;
+				try {
+					strlogin = new String(dlogin, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				byte[] dpass = Base64.decode(upass, 0);
+				String strpass = new String(dpass);
 
-				uname.setText(login);
-				pword.setText(upass);
-				/*
-				 * System.out.println("Decrypted login :" + dlogin);
-				 * System.out.println("Decrypted pass :" + dupass);
-				 */
+				uname.setText(strlogin);
+				pword.setText(strpass);
+
+				System.out.println("Decrypted login :" + strlogin);
+				System.out.println("Decrypted pass :" + strpass);
+
 				rememberCbx.setChecked(true);
 			}
 		}
@@ -126,7 +138,7 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		submit.setOnClickListener(BbktimetableActivity.this);
 	}
 
-	private void saveLoginDetails() {
+	private void saveLoginDetails() throws UnsupportedEncodingException {
 		String login = uname.getText().toString();
 		String pass = pword.getText().toString();
 
@@ -135,12 +147,29 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 			e.putBoolean("rememberMe", true);
 			// String elogin = ed.encrypt(login);
 			// String epass = ed.encrypt(pass);
-			// // pass = Base64.encodeToString(pass.getBytes(), Base64.DEFAULT);
-			e.putString("login", login);
-			e.putString("password", pass);
-			// System.out.println("Encrypted login is: " + elogin);
-			// System.out.println("Encrypted pass is: " + epass);
-			//
+			byte[] logindata = null;
+			try {
+				logindata = login.getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			String loginbase64 = Base64.encodeToString(logindata,
+					Base64.DEFAULT);
+			byte[] passdata = null;
+			try {
+				passdata = pass.getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			String passbase64 = Base64.encodeToString(passdata, Base64.DEFAULT);
+			e.putString("login", loginbase64);
+			e.putString("password", passbase64);
+
+			System.out.println("Encrypted login is: " + loginbase64);
+			System.out.println("Encrypted pass is: " + passbase64);
+
 			e.commit();
 		} else {
 			Toast.makeText(BbktimetableActivity.this,
@@ -162,7 +191,12 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		boolean isChecked = false;
 		isChecked = rememberCbx.isChecked();
 		if (isChecked) {
-			saveLoginDetails();
+			try {
+				saveLoginDetails();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			removeLoginDetails();
 		}
@@ -331,10 +365,9 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 
 		UsernamePasswordCredentials creds = null;
 
-		/*
-		 * System.out.println("User ID :" + username);
-		 * System.out.println("Password is :" + password);
-		 */
+		// System.out.println("User ID :" + username);
+		// System.out.println("Password is :" + password);
+
 		return creds = new UsernamePasswordCredentials(username, password);
 	}
 }

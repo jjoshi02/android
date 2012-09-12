@@ -14,8 +14,8 @@ public class EncDec {
 
 	EncDec(SecretKey key) {
 		try {
-			ecipher = Cipher.getInstance("DES");
-			dcipher = Cipher.getInstance("DES");
+			ecipher = Cipher.getInstance("AES");
+			dcipher = Cipher.getInstance("AES");
 			ecipher.init(Cipher.ENCRYPT_MODE, key);
 			dcipher.init(Cipher.DECRYPT_MODE, key);
 		} catch (javax.crypto.NoSuchPaddingException e) {
