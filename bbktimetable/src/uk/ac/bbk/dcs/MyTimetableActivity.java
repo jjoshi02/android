@@ -3,7 +3,6 @@ package uk.ac.bbk.dcs;
 import java.net.URLEncoder;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,7 +21,8 @@ public class MyTimetableActivity extends Activity implements OnClickListener {
 		WebView webview = (WebView) findViewById(R.id.webview);
 		webview.setVerticalScrollBarEnabled(true);
 		webview.setHorizontalScrollBarEnabled(true);
-		webview.setBackgroundColor(Color.parseColor("#882233"));
+		// webview.setBackgroundColor(Color.parseColor("#882233"));
+		// webview.setBackgroundColor(0x00000000);
 		String summary = "<html><body>" + BbktimetableActivity.timetableString
 				+ "</body></html>";
 		// System.out.println(summary);

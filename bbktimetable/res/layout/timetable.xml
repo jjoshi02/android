@@ -5,7 +5,7 @@
  xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#882233"
+    android:background="#FFFFFF"
  android:orientation="vertical">
 
 <WebView
@@ -13,7 +13,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_above="@+id/buttonquit"
-    android:background="#882233" />
+    android:background="#FFFFFF" />
 
     <Button
         android:id="@+id/buttonquit"
