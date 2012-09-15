@@ -3,25 +3,15 @@
     android:id="@+id/myScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#882233"
+    android:background="#872632"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/birkbecktext"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="Birkbeck"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.21"
-        android:gravity="center_horizontal"
-        android:text="UNIVERSITY OF LONDON"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:background="#872632"
+        android:src="@drawable/bbk" />
 
     <TextView
         android:id="@+id/textView2"
@@ -73,11 +63,15 @@
         android:layout_height="wrap_content"
         android:text="Submit" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Birkbeck ©2012"
-        android:textAppearance="?android:attr/textAppearanceSmall" android:gravity="center_horizontal"/>
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:gravity="center_horizontal"
+            android:text="Birkbeck ©2012"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    
 
 </LinearLayout>
