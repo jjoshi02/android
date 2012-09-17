@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
- android:orientation="vertical">
-
+ android:orientation="vertical">
 <WebView
     android:id="@+id/webview"
     android:layout_width="fill_parent"
@@ -25,8 +24,7 @@
             android:background="#872632"
             android:gravity="center_horizontal"
             android:text="Birkbeck ©2012"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
+            android:textAppearance="?android:attr/textAppearanceSmall" />
         <Button
             android:id="@+id/buttonquit"
             android:layout_width="wrap_content"
@@ -34,8 +32,7 @@
             android:layout_above="@+id/textView1"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
-            android:text="Quit" />
-
+            android:text="Quit" />
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
