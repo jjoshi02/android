@@ -54,6 +54,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * main activity
+ * 
+ * @author jjoshi02
+ * 
+ */
 public class BbktimetableActivity extends Activity implements OnClickListener {
 	private static final String url = "https://puck.mda.bbk.ac.uk/bsis_student/pp_stu";
 	public static String timetableString = null;
@@ -66,16 +72,25 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 	private SharedPreferences myPrefs;
 
 	@Override
+	/**
+	 * on resume
+	 */
 	public void onResume() {
 		super.onResume();
 	}
 
 	@Override
+	/**
+	 * on pause
+	 */
 	public void onPause() {
 		super.onPause();
 	}
 
 	@Override
+	/**
+	 * on destroy
+	 */
 	public void onDestroy() {
 		super.onDestroy();
 		System.gc();
@@ -83,6 +98,9 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 	}
 
 	@Override
+	/**
+	 * On create
+	 */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
@@ -134,6 +152,11 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		submit.setOnClickListener(BbktimetableActivity.this);
 	}
 
+	/**
+	 * Save credentials in phone settings
+	 * 
+	 * @throws UnsupportedEncodingException
+	 */
 	private void saveLoginDetails() throws UnsupportedEncodingException {
 		String login = uname.getText().toString();
 		String pass = pword.getText().toString();
@@ -172,6 +195,9 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	/**
+	 * Remove credentials from phone settings
+	 */
 	private void removeLoginDetails() {
 		Editor e = myPrefs.edit();
 		e.putBoolean("rememberMe", false);
@@ -180,6 +206,9 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		e.commit();
 	}
 
+	/**
+	 * call on click
+	 */
 	public void onClick(View v) {
 		boolean isChecked = false;
 		isChecked = rememberCbx.isChecked();
@@ -232,6 +261,13 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	/**
+	 * Retrieve timetable and set static timetableString
+	 * 
+	 * @param page
+	 *            to scrape
+	 * @return true or false
+	 */
 	private boolean getMyTimetable(String page) {
 		String tableText, first, second, third;
 		tableText = first = second = third = null;
@@ -277,6 +313,13 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		this.finish();
 	}
 
+	/**
+	 * Retrieve page for url
+	 * 
+	 * @param url
+	 *            URL to retrieve
+	 * @return page content
+	 */
 	public String getPage(String url) {
 		String page = null;
 		HttpUriRequest request = null;
@@ -307,6 +350,13 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		return page;
 	}
 
+	/**
+	 * Get Student ID from page
+	 * 
+	 * @param page
+	 *            HTML page
+	 * @return Student ID
+	 */
 	public String getStudentId(String page) {
 		String studentId = null;
 
@@ -323,6 +373,17 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		return studentId;
 	}
 
+	/**
+	 * Get new HTTP client
+	 * 
+	 * @return HTTP client object
+	 * @throws KeyStoreException
+	 * @throws KeyManagementException
+	 * @throws NoSuchAlgorithmException
+	 * @throws UnrecoverableKeyException
+	 * @throws CertificateException
+	 * @throws IOException
+	 */
 	public HttpClient getNewHttpClient() throws KeyStoreException,
 			KeyManagementException, NoSuchAlgorithmException,
 			UnrecoverableKeyException, CertificateException, IOException {
@@ -348,6 +409,11 @@ public class BbktimetableActivity extends Activity implements OnClickListener {
 		return new DefaultHttpClient(ccm, params);
 	}
 
+	/**
+	 * Get Username Password credentials
+	 * 
+	 * @return UsernamePasswordCredentials object
+	 */
 	public static UsernamePasswordCredentials getCredential() {
 		// String username = "jjoshi02";
 		// String password = "";

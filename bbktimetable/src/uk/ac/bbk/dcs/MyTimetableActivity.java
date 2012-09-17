@@ -9,10 +9,19 @@ import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 
+/**
+ * My timetable activity
+ * 
+ * @author jjoshi02
+ * 
+ */
 public class MyTimetableActivity extends Activity implements OnClickListener {
 	private Button buttonquit;
 
 	@Override
+	/**
+	 * on create
+	 */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.timetable);
@@ -32,10 +41,16 @@ public class MyTimetableActivity extends Activity implements OnClickListener {
 		buttonquit.setOnClickListener(MyTimetableActivity.this);
 	}
 
+	/**
+	 * on destroy
+	 */
 	public void onDestroy() {
 		super.onDestroy();
 	}
 
+	/**
+	 * on click
+	 */
 	public void onClick(View v) {
 		if (v == buttonquit) {
 			super.onDestroy();

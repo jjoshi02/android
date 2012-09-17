@@ -22,6 +22,8 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 
 /**
+ * insecure ssl factory
+ * 
  * @author jjoshi02
  * 
  */
@@ -55,6 +57,9 @@ public class InsecureSslSocketFactory extends SSLSocketFactory {
 	}
 
 	@Override
+	/**
+	 * create socket
+	 */
 	public Socket createSocket(Socket s, String host, int port,
 			boolean autoClose) throws UnknownHostException, IOException {
 		// TODO Auto-generated method stub
@@ -65,6 +70,9 @@ public class InsecureSslSocketFactory extends SSLSocketFactory {
 	}
 
 	@Override
+	/**
+	 * create socket
+	 */
 	public Socket createSocket() throws IOException {
 		SSLSocket sslSocket = (SSLSocket) sslContext.getSocketFactory()
 				.createSocket();
@@ -72,6 +80,11 @@ public class InsecureSslSocketFactory extends SSLSocketFactory {
 		return sslSocket;
 	}
 
+	/**
+	 * set ssl version 3
+	 * 
+	 * @param sslSocket
+	 */
 	private void setSslV3Only(SSLSocket sslSocket) {
 		// TODO Auto-generated method stub
 		sslSocket.setEnabledProtocols(ENABLED_PROTOCOLS);
